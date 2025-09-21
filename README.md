@@ -1,66 +1,199 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Banco Inter API - Laravel Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este é o backend do aplicativo Banco Inter, desenvolvido em Laravel com autenticação por tokens usando Laravel Sanctum.
 
-## About Laravel
+## 🚀 Funcionalidades
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Autenticação completa** (registro, login, logout)
+- **Gestão de usuários** com upload de foto de perfil
+- **Sistema de transações** (criar, listar, remover)
+- **Atualização automática de saldo** baseada nas transações
+- **API RESTful** com validação de dados
+- **Segurança** com tokens de autenticação
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Pré-requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.1 ou superior
+- Composer
+- MySQL/MariaDB (XAMPP recomendado)
+- Extensões PHP: PDO, OpenSSL, Mbstring, Tokenizer, XML, Ctype, JSON
 
-## Learning Laravel
+## 🔧 Instalação
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone o repositório
+```bash
+git clone https://github.com/Danilo-RC/banco-inter-api.git
+cd banco-inter-api
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 2. Instale as dependências
+```bash
+composer install
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3. Configure o ambiente
+```bash
+# Copie o arquivo de configuração para XAMPP
+cp .env.xampp .env
 
-## Laravel Sponsors
+# Gere a chave da aplicação
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 4. Configure o banco de dados
+1. Inicie o XAMPP (Apache e MySQL)
+2. Acesse http://localhost/phpmyadmin
+3. Crie um banco de dados chamado `banco_inter`
+4. Execute as migrations:
+```bash
+php artisan migrate
+```
 
-### Premium Partners
+### 5. Configure o storage
+```bash
+php artisan storage:link
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 6. Inicie o servidor
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
 
-## Contributing
+A API estará disponível em: `http://localhost:8000`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📚 Endpoints da API
 
-## Code of Conduct
+### Autenticação
+- `POST /api/register` - Registrar novo usuário
+- `POST /api/login` - Fazer login
+- `POST /api/logout` - Fazer logout (requer token)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Usuário
+- `GET /api/user` - Obter dados do usuário (requer token)
+- `POST /api/profile/photo` - Upload de foto de perfil (requer token)
 
-## Security Vulnerabilities
+### Transações
+- `GET /api/transactions` - Listar transações do usuário (requer token)
+- `POST /api/transactions` - Criar nova transação (requer token)
+- `DELETE /api/transactions/{id}` - Remover transação (requer token)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🗄️ Estrutura do Banco de Dados
 
-## License
+### Tabela `users`
+- `id` - Chave primária
+- `name` - Nome do usuário
+- `email` - Email (único)
+- `password` - Senha (hash)
+- `saldo` - Saldo atual (decimal)
+- `foto_perfil` - URL da foto de perfil
+- `created_at` - Data de criação
+- `updated_at` - Data de atualização
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Tabela `transactions`
+- `id` - Chave primária da transação
+- `user_id` - Chave estrangeira para o usuário
+- `type` - Tipo da transação ('entrada' ou 'saida')
+- `amount` - Valor da transação (decimal)
+- `description` - Descrição da transação
+- `created_at` - Data de criação
+- `updated_at` - Data de atualização
+
+**Nota sobre as chaves**: A `id` é a chave primária única de cada transação, enquanto `user_id` é a chave estrangeira que liga a transação ao usuário que a realizou. Isso é padrão em bancos de dados relacionais.
+
+## 🔒 Autenticação
+
+O sistema utiliza **Laravel Sanctum** para autenticação baseada em tokens:
+
+1. O usuário faz login e recebe um token
+2. O token deve ser enviado no header `Authorization: Bearer {token}` em todas as requisições protegidas
+3. O token é válido até o logout ou expiração
+
+## 📝 Exemplos de Uso
+
+### Registro de usuário
+```bash
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "João Silva",
+    "email": "joao@email.com",
+    "password": "123456"
+  }'
+```
+
+### Login
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "joao@email.com",
+    "password": "123456"
+  }'
+```
+
+### Criar transação
+```bash
+curl -X POST http://localhost:8000/api/transactions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {seu_token}" \
+  -d '{
+    "type": "entrada",
+    "amount": 1000.00,
+    "description": "Salário"
+  }'
+```
+
+## 🛠️ Desenvolvimento
+
+### Comandos úteis
+```bash
+# Limpar cache
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+
+# Recriar banco de dados
+php artisan migrate:fresh
+
+# Ver rotas
+php artisan route:list
+
+# Ver logs
+tail -f storage/logs/laravel.log
+```
+
+### Estrutura de arquivos importantes
+```
+app/
+├── Http/Controllers/
+│   ├── AuthController.php      # Autenticação
+│   ├── UserController.php      # Gestão de usuários
+│   └── TransactionController.php # Gestão de transações
+├── Models/
+│   ├── User.php               # Model do usuário
+│   └── Transaction.php        # Model da transação
+database/
+├── migrations/                # Migrations do banco
+routes/
+└── api.php                   # Rotas da API
+```
+
+## 🐛 Troubleshooting
+
+### Erro de conexão com banco
+- Verifique se o MySQL está rodando no XAMPP
+- Confirme as configurações no arquivo `.env`
+- Teste a conexão: `php artisan tinker` → `DB::connection()->getPdo()`
+
+### Erro de token inválido
+- Verifique se o token está sendo enviado corretamente
+- Confirme se o usuário não foi removido do banco
+- Teste com um novo login
+
+### Erro de upload de foto
+- Verifique se o link do storage foi criado: `php artisan storage:link`
+- Confirme as permissões da pasta `storage/`
+
+## 📄 Licença
+
+Este projeto foi desenvolvido para fins educacionais e demonstrativos.

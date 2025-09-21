@@ -23,9 +23,9 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'tipo' => 'required|in:entrada,saida',
-            'valor' => 'required|numeric|min:0.01',
-            'descricao' => 'required|string|max:255',
+            'type' => 'required|in:entrada,saida',
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -44,16 +44,16 @@ class TransactionController extends Controller
             // Cria a transação
             $transaction = Transaction::create([
                 'user_id' => $user->id,
-                'tipo' => $request->tipo,
-                'valor' => $request->valor,
-                'descricao' => $request->descricao,
+                'type' => $request->type,
+                'amount' => $request->amount,
+                'description' => $request->description,
             ]);
 
             // Atualiza o saldo do usuário
-            if ($request->tipo === 'entrada') {
-                $user->saldo += $request->valor;
+            if ($request->type === 'entrada') {
+                $user->saldo += $request->amount;
             } else {
-                $user->saldo -= $request->valor;
+                $user->saldo -= $request->amount;
             }
             
             $user->save();
@@ -93,10 +93,10 @@ class TransactionController extends Controller
         
         try {
             // Reverte o saldo do usuário
-            if ($transaction->tipo === 'entrada') {
-                $user->saldo -= $transaction->valor;
+            if ($transaction->type === 'entrada') {
+                $user->saldo -= $transaction->amount;
             } else {
-                $user->saldo += $transaction->valor;
+                $user->saldo += $transaction->amount;
             }
             
             $user->save();
