@@ -13,7 +13,7 @@ class TransactionController extends Controller
     {
         $user = $request->user();
         $transactions = $user->transactions()->orderBy('created_at', 'desc')->get();
-        
+
         return response()->json([
             'success' => true,
             'transactions' => $transactions
@@ -39,23 +39,21 @@ class TransactionController extends Controller
         $user = $request->user();
 
         DB::beginTransaction();
-        
+
         try {
-            // Cria a transação
+            $amount = (float) $request->amount;
+
             $transaction = Transaction::create([
                 'user_id' => $user->id,
-                'type' => $request->type,
-                'amount' => $request->amount,
-                'description' => $request->description,
+                'tipo' => $request->type,
+                'valor' => $amount,
+                'descricao' => $request->description,
             ]);
 
-            // Atualiza o saldo do usuário
-            if ($request->type === 'entrada') {
-                $user->saldo += $request->amount;
-            } else {
-                $user->saldo -= $request->amount;
-            }
-            
+            $user->saldo = $request->type === 'entrada'
+                ? $user->saldo + $amount
+                : $user->saldo - $amount;
+
             $user->save();
 
             DB::commit();
@@ -69,10 +67,11 @@ class TransactionController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao criar transação'
+                'message' => 'Erro ao criar transação',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -80,7 +79,9 @@ class TransactionController extends Controller
     public function destroy(Request $request, $id)
     {
         $user = $request->user();
-        $transaction = Transaction::where('id', $id)->where('user_id', $user->id)->first();
+        $transaction = Transaction::where('id', $id)
+                                  ->where('user_id', $user->id)
+                                  ->first();
 
         if (!$transaction) {
             return response()->json([
@@ -90,18 +91,16 @@ class TransactionController extends Controller
         }
 
         DB::beginTransaction();
-        
+
         try {
-            // Reverte o saldo do usuário
-            if ($transaction->type === 'entrada') {
-                $user->saldo -= $transaction->amount;
-            } else {
-                $user->saldo += $transaction->amount;
-            }
-            
+            $valor = (float) $transaction->valor;
+
+            $user->saldo = $transaction->tipo === 'entrada'
+                ? $user->saldo - $valor
+                : $user->saldo + $valor;
+
             $user->save();
 
-            // Remove a transação
             $transaction->delete();
 
             DB::commit();
@@ -114,10 +113,11 @@ class TransactionController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao remover transação'
+                'message' => 'Erro ao remover transação',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

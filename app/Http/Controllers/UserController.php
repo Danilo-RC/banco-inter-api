@@ -40,7 +40,7 @@ class UserController extends Controller
         }
 
         // Salva a nova foto
-        $path = $request->file('photo')->store('profile_photos', 'public');
+        $path = $request->file('photo')->store('fotos_perfil', 'public');
         
         // Atualiza o usuário
         $user->update([

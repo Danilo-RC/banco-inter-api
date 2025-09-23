@@ -11,9 +11,13 @@ class Transaction extends Model
 
     protected $fillable = [
         'user_id',
-        'tipo',
-        'valor',
+        'tipo',    // 'entrada' ou 'saida'
+        'valor',   // float
         'descricao',
+    ];
+
+    protected $casts = [
+        'valor' => 'float', // garante que valor seja float
     ];
 
     public function user()
