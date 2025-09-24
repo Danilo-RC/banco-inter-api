@@ -21,7 +21,7 @@ use App\Http\Controllers\TransactionController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Rotas Protegidas (precisam de token)
+// Rotas Protegidas (que precisam de token)
 Route::middleware('auth:sanctum')->group(function () {
     // Autenticação
     Route::post('/logout', [AuthController::class, 'logout']);
